@@ -14,7 +14,7 @@
 
 using namespace std;
 
-const int NUM_ROOMS = 5;
+const int NUM_ROOMS = 3;
 const int W = 600;
 const int H = 600;
 const int NUM_OF_SOLDIERS = 3;
@@ -58,6 +58,15 @@ void init()
 
 void AddSoldiers()
 {
+	int tr = rand() % MSZ;
+	int tc = rand() % MSZ;
+	while (maze[tr][tc] != SPACE)
+	{
+		tr = rand() % MSZ;
+		tc = rand() % MSZ;
+	}
+
+
 	for (int i = 0; i < NUM_OF_SOLDIERS - 1; i++)
 	{
 		whiteTeam[i] = new Fighter(WHITE);
@@ -69,8 +78,13 @@ void AddSoldiers()
 
 	rooms[0].AddSoldiersToRoom(maze, whiteTeam);
 	rooms[NUM_ROOMS - 1].AddSoldiersToRoom(maze, blackTeam);
-}
 
+	for (int i = 0; i < NUM_OF_SOLDIERS; i++)
+	{
+		whiteTeam[i]->setTarget(tr, tc);
+		blackTeam[i]->setTarget(tr, tc);
+	}
+}
 void AddObstacles()
 {
 	int num_obstacles = 100;
@@ -310,6 +324,9 @@ void ShowMaze()
 			case BLACK:
 				glColor3d(0, 0, 0);
 				break;
+			case GRAY:
+				glColor3d(1, 1, 1);
+				break;
 			}// switch
 			// now show the cell as plygon (square)
 			glBegin(GL_POLYGON);
@@ -368,11 +385,34 @@ void display()
 
 void moveSoldiers()
 {
-	for (int i = 0; i < NUM_OF_SOLDIERS; i++)
+	/*for (int i = 0; i < NUM_OF_SOLDIERS; i++)
 	{
 		whiteTeam[i]->Move();
 		blackTeam[i]->Move();
 
+	}*/
+
+	for (int i = 0; i < NUM_OF_SOLDIERS; i++)
+	{
+		if (whiteTeam[i]->HasPath())
+		{
+			Sleep(150);
+			whiteTeam[i]->Move(maze);
+		}
+		else
+		{
+			whiteTeam[i]->CalcMove(maze);
+		}
+
+		if (blackTeam[i]->HasPath())
+		{
+			Sleep(150);
+			blackTeam[i]->Move(maze);
+		}
+		else
+		{
+			blackTeam[i]->CalcMove(maze);
+		}
 	}
 	//int row, col;
 	//for (int i = 0; i < 3; i++)
@@ -400,8 +440,13 @@ void idle()
 			r1++;
 			r2 = r1 + 1;
 			if (r1 + 1 >= NUM_ROOMS)
-				underConstruction=false;
+			{
+				underConstruction = false;
+
+		
+			}
 		}
+
 	}
 	// bullet
 	if (pb != nullptr && pb->getIsMoving())

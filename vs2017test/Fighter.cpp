@@ -12,7 +12,3 @@ void Fighter::PickUpHealthKits()
 	if (hp > 100)
 		hp = 100;
 }
-void Fighter::Move()
-{
-	std::cout << "Fighter Move" << std::endl;
-}

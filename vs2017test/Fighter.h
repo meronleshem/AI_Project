@@ -12,6 +12,6 @@ public:
 	int getNumOfGrenades() { return numOfGrenades; }
 	void TakeAmmo() { numOfBullets += 20; numOfGrenades += 2; }
 	void PickUpHealthKits();
-	void Move();
+	void Move(int maze[MSZ][MSZ]);
 };
 
