@@ -394,25 +394,20 @@ void moveSoldiers()
 
 	for (int i = 0; i < NUM_OF_SOLDIERS; i++)
 	{
-		if (whiteTeam[i]->HasPath())
-		{
-			Sleep(150);
-			whiteTeam[i]->Move(maze);
-		}
-		else
-		{
-			whiteTeam[i]->CalcMove(maze);
-		}
-
-		if (blackTeam[i]->HasPath())
-		{
-			Sleep(150);
-			blackTeam[i]->Move(maze);
-		}
-		else
-		{
+		while(blackTeam[i]->HasPath() == false)
 			blackTeam[i]->CalcMove(maze);
-		}
+			
+		Sleep(25);
+		blackTeam[i]->Move(maze);
+
+		while (whiteTeam[i]->HasPath() == false)
+			whiteTeam[i]->CalcMove(maze);
+
+		Sleep(25);
+		whiteTeam[i]->Move(maze);
+
+
+	
 	}
 	//int row, col;
 	//for (int i = 0; i < 3; i++)
