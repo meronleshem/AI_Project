@@ -30,7 +30,8 @@ Room rooms[NUM_ROOMS];
 bool underConstruction = true;
 int r1=0, r2=1; // rooms indices
 
-Bullet* pb = nullptr;
+Bullet* pWhiteBullets[2];
+Bullet* pBlackBullets[2];
 Grenade* pg = nullptr;
 
 
@@ -375,8 +376,15 @@ void display()
 	if (underConstruction)
 		ShowStartAndTarget();
 
-	if (pb != nullptr)
-		pb->show();
+	for (int i = 0; i < 2; i++)
+	{
+		if (pWhiteBullets[i] != nullptr)
+			pWhiteBullets[i]->show();
+
+		if (pBlackBullets[i] != nullptr)
+			pBlackBullets[i]->show();
+
+	}
 	if (pg != nullptr)
 		pg->show();
 
@@ -385,13 +393,6 @@ void display()
 
 void moveSoldiers()
 {
-	/*for (int i = 0; i < NUM_OF_SOLDIERS; i++)
-	{
-		whiteTeam[i]->Move();
-		blackTeam[i]->Move();
-
-	}*/
-
 	for (int i = 0; i < NUM_OF_SOLDIERS; i++)
 	{
 		while(blackTeam[i]->HasPath() == false)
@@ -406,21 +407,17 @@ void moveSoldiers()
 		Sleep(25);
 		whiteTeam[i]->Move(maze);
 
-
-	
 	}
-	//int row, col;
-	//for (int i = 0; i < 3; i++)
+
+	//for (int i = 0; i < NUM_OF_SOLDIERS - 1; i++)
 	//{
-	//	row = whiteTeam[i].getRow();
-	//	col = whiteTeam[i].getCol();
-
-	//	if (maze[row + 1][col + 1] == SPACE)
+	//	int fire = rand() % 100;
+	//	if (fire > 85)
 	//	{
-	//		whiteTeam[i].setPos(maze, row + 1, col + 1);
+	//	
 	//	}
-
 	//}
+
 }
 
 void idle()
@@ -444,25 +441,43 @@ void idle()
 
 	}
 	// bullet
-	if (pb != nullptr && pb->getIsMoving())
-		pb->Move(maze);
+
 	if (pg != nullptr && pg->getIsExploded())
 		pg->Exploding(maze);
-	if(!underConstruction)
+	if (!underConstruction)
+	{
 		moveSoldiers();
+		for (int i = 0; i < 2; i++)
+		{
+			//Fighter* f = dynamic_cast<Fighter*>(whiteTeam[i]);
+			//f->FireBullet(maze);
+			if (pWhiteBullets[i] == nullptr || !pWhiteBullets[i]->getIsMoving())
+			{
+				pWhiteBullets[i] = new Bullet(whiteTeam[i]->getCol(), whiteTeam[i]->getRow(), (rand() % 360) * 3.14 / 180);
+				pWhiteBullets[i]->Fire();
+			}
+			if (pWhiteBullets[i] != nullptr && pWhiteBullets[i]->getIsMoving())
+				pWhiteBullets[i]->Move(maze);
+
+			//Fighter* f = dynamic_cast<Fighter*>(blackTeam[i]);
+			if (pBlackBullets[i] == nullptr || !pBlackBullets[i]->getIsMoving())
+			{
+				pBlackBullets[i] = new Bullet(blackTeam[i]->getCol(), blackTeam[i]->getRow(), (rand() % 360) * 3.14 / 180);
+				pBlackBullets[i]->Fire();
+			}
+			if (pBlackBullets[i] != nullptr && pBlackBullets[i]->getIsMoving())
+				pBlackBullets[i]->Move(maze);
+
+		}
+
+	}
 	glutPostRedisplay(); // indirect call to refresh function (display)
 }
 
 void menu(int choice)
 {
-	if (choice == 1) // fire bullet
-	{
-		if (pb != nullptr)
-		{
-			pb->Fire();
-		}
-	}
-	else if (choice == 2) // grenade
+
+	if (choice == 2) // grenade
 	{
 		if (pg != nullptr)
 		{
@@ -481,20 +496,20 @@ void menu(int choice)
 }
 
 // x and y are in pixels
-void mouse(int button, int state, int x, int y)
-{
-	if (pb == nullptr && button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
-		double cx, cy;
-
-		cx = MSZ * x / (double)W;
-		cy = MSZ * (H-y) / (double)H;
-
-		// set x,y and direction angle
+//void mouse(int button, int state, int x, int y)
+//{
+//	if (pb == nullptr && button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+//	{
+//		double cx, cy;
+//
+//		cx = MSZ * x / (double)W;
+//		cy = MSZ * (H-y) / (double)H;
+//
+//		 set x,y and direction angle
 //		pb = new Bullet(cx, cy, (rand() % 360)*3.14 / 180);
-		pg = new Grenade(cx, cy);
-	}
-}
+//		pg = new Grenade(cx, cy);
+//	}
+//}
 
 void main(int argc, char* argv[])
 {
@@ -506,7 +521,7 @@ void main(int argc, char* argv[])
 
 	glutDisplayFunc(display); // sets display function as window refresh function
 	glutIdleFunc(idle); // runs all the time when nothing happens
-	glutMouseFunc(mouse);
+	//glutMouseFunc(mouse);
 
 
 	// menu

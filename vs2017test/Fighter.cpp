@@ -12,3 +12,16 @@ void Fighter::PickUpHealthKits()
 	if (hp > 100)
 		hp = 100;
 }
+
+void Fighter::FireBullet(int maze[MSZ][MSZ])
+{
+	Bullet* b = new Bullet(this->col, this->row, (rand() % 360) * 3.14 / 180);
+	b->Fire();
+	b->show();
+	while (b->getIsMoving())
+	{
+		b->Move(maze);
+		b->show();
+	}
+
+}

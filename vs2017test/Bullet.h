@@ -1,6 +1,6 @@
 #pragma once
 #include "Definitions.h"
-const double SPEED = 0.1;
+const double SPEED = 1.5;
 
 class Bullet
 {
