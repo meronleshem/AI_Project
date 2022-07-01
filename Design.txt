@@ -1,0 +1,14 @@
+Class Soldier
+	int health points
+	int team (0 or 1)
+	bool isAlive
+
+Class Fighter 
+	int numOfBullets
+	int numOfGrenades
+
+Class ItemPicker
+	
+
+
+- Add ammo and healtpoints in rooms
